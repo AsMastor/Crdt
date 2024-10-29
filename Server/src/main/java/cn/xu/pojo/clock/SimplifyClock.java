@@ -1,7 +1,9 @@
 package cn.xu.pojo.clock;
 
 import cn.xu.config.Config;
+import lombok.Data;
 
+@Data
 public class SimplifyClock implements Clock {
     int nid, lc, gca, gcb;
 
