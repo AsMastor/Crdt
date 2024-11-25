@@ -40,19 +40,23 @@ public class SimplifyClock implements Clock {
 
     @Override
     public int compare(Clock c2) {
-        if (this.gcb == Config.emptyGcb || ((SimplifyClock) c2).gcb == Config.emptyGcb) {
+        SimplifyClock clock2 = (SimplifyClock) c2;
+        if (this.gcb == Config.emptyGcb || clock2.gcb == Config.emptyGcb) {
             return 0;
         }
-        if (this.nid == ((SimplifyClock) c2).nid) {
-            if (this.lc < ((SimplifyClock) c2).lc) {
+        if (this.nid == clock2.nid) {
+            if (this.lc < clock2.lc) {
                 return -1;
             }
-            return 1;
+            if (this.lc > clock2.lc) {
+                return 1;
+            }
+            throw new RuntimeException("same clock error");
         }
-        if (this.gcb <= ((SimplifyClock) c2).gca) {
+        if (this.gcb <= clock2.gca) {
             return -1;
         }
-        if (((SimplifyClock) c2).gcb <= this.gca) {
+        if (clock2.gcb <= this.gca) {
             return 1;
         }
         return 0;
@@ -60,7 +64,8 @@ public class SimplifyClock implements Clock {
 
     @Override
     public boolean equals(Clock c2) {
-        return this.nid == ((SimplifyClock) c2).nid && this.lc == ((SimplifyClock) c2).lc;
+        SimplifyClock clock2 = (SimplifyClock) c2;
+        return this.nid == clock2.nid && this.lc == clock2.lc;
     }
 
     @Override

@@ -16,7 +16,7 @@ public class ServerBackGround implements BackGround {
 
     public ServerBackGround() {
         // 开启线程池处理消息去重逻辑+消息转发
-        threadPool = new ThreadPoolExecutor(5, 5, 60, TimeUnit.SECONDS,
+        threadPool = new ThreadPoolExecutor(1, 5, 60, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>());
         simDatabase = new HashSet<>();
     }

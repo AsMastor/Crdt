@@ -1,18 +1,13 @@
 package cn.xu.pojo.clock;
 
 import cn.xu.config.Config;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class SimplifyClock implements Clock {
     int nid, lc, gca, gcb;
-
-    public SimplifyClock(int nid, int lc, int gca, int gcb) {
-        this.nid = nid;
-        this.lc = lc;
-        this.gca = gca;
-        this.gcb = gcb;
-    }
 
     // 反序列化
     public SimplifyClock(String clockStr) {

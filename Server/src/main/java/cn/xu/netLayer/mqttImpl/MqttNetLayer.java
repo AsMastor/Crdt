@@ -12,7 +12,7 @@ import java.util.List;
 public class MqttNetLayer implements NetLayer {
     private MqttClient client;
     private List<MqttClient> clientOnOtherEdge;
-    private MyMqttCallback myMqttCallback;
+    private BackGround backGround;
     private final String downTopic;
     private final int qos = 1;
 
@@ -29,7 +29,7 @@ public class MqttNetLayer implements NetLayer {
             //System.out.println("Connecting to broker: " + Config.mqttBroker);
             client.connect(connOpts);
             //System.out.println("Connected");
-            myMqttCallback = new MyMqttCallback();
+            MyMqttCallback myMqttCallback = new MyMqttCallback();
             client.setCallback(myMqttCallback);
             client.subscribe(upTopic, qos);
         } catch (MqttException me) {
@@ -46,9 +46,9 @@ public class MqttNetLayer implements NetLayer {
                 MqttClient tempClient = new MqttClient(Config.mqttBrokers.get(i), "server#".concat(String.valueOf(nodeId)), new MemoryPersistence());
                 clientOnOtherEdge.add(tempClient);
                 tempClient.connect(connOpts);
-                myMqttCallback = new MyMqttCallback();
+                MyMqttCallback myMqttCallback = new MyMqttCallback();
                 tempClient.setCallback(myMqttCallback);
-                tempClient.subscribe(downTopic.concat(String.valueOf(i)), qos);    // 这里订阅的是其他边缘服务器器的下行主题
+                tempClient.subscribe(Config.toOtherServersTopic, qos);    // 这里订阅的是其他边缘服务器的发布给边服务器的主题
             } catch (MqttException e) {
                 throw new RuntimeException(e);
             }
@@ -57,18 +57,10 @@ public class MqttNetLayer implements NetLayer {
 
     @Override
     public void setBackGround(BackGround backGround) {
-        myMqttCallback.setBackGround(backGround);
+        this.backGround = backGround;
     }
 
     private class MyMqttCallback implements MqttCallback {
-        private BackGround backGround;
-
-        MyMqttCallback() {}
-
-        void setBackGround(BackGround backGround) {
-            this.backGround = backGround;
-        }
-
         @Override
         public void connectionLost(Throwable cause) {
             System.out.println("Connection lost: " + cause.getMessage());
@@ -82,7 +74,7 @@ public class MqttNetLayer implements NetLayer {
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
             String msg = new String(message.getPayload());
-            System.out.println("Received message from topic '" + topic + "': " + msg);
+            //System.out.println("Received message from topic '" + topic + "': " + msg);
             backGround.msgIn(msg);
         }
 
@@ -95,13 +87,23 @@ public class MqttNetLayer implements NetLayer {
 
     @Override
     public void asyncSend(String msgStr) {
-        //System.out.println("Publishing message: " + msg.toString());
         MqttMessage message = new MqttMessage(msgStr.getBytes());
         message.setQos(qos);
         try {
             // 发布消息
             client.publish(downTopic, message);
-            //System.out.println("Message published");
+        } catch (MqttException me) {
+            me.printStackTrace();
+        }
+    }
+
+    @Override
+    public void asyncSendToOtherServers(String msgStr) {
+        MqttMessage message = new MqttMessage(msgStr.getBytes());
+        message.setQos(qos);
+        try {
+            // 发布消息
+            client.publish(Config.toOtherServersTopic, message);
         } catch (MqttException me) {
             me.printStackTrace();
         }
