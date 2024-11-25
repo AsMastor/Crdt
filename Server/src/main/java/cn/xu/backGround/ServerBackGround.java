@@ -23,20 +23,22 @@ public class ServerBackGround implements BackGround {
 
     @Override
     public void msgIn(String msgStr) {
-        threadPool.execute(()->{
-            boolean isDuplicated = false;
-            // 放入数据库的去重逻辑
-            String clockStr = Msg.getClockStr(msgStr);
-            if (simDatabase.contains(clockStr)) {
-                isDuplicated = true;
-            } else {
-                simDatabase.add(clockStr);
-            }
-            if (!isDuplicated) {
-                // 不是重复的消息，再后续处理
-                clockLayer.msgIn(msgStr);
-            }
-        });
+        synchronized (this) {
+            threadPool.execute(()->{
+                boolean isDuplicated = false;
+                // 放入数据库的去重逻辑
+                String clockStr = Msg.getClockStr(msgStr);
+                if (simDatabase.contains(clockStr)) {
+                    isDuplicated = true;
+                } else {
+                    simDatabase.add(clockStr);
+                }
+                if (!isDuplicated) {
+                    // 不是重复的消息，再后续处理
+                    clockLayer.msgIn(msgStr);
+                }
+            });
+        }
     }
 
     @Override

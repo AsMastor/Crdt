@@ -16,17 +16,19 @@ import java.util.Random;
 public class VectorClockFactory implements Factory{
     private final int nId;
     private final int nodeNum;
+    private final int eId;
     private Random random;
 
-    public VectorClockFactory(int nId, int nodeNum, Random random) {
+    public VectorClockFactory(int nId, int nodeNum, int eId, Random random) {
         this.nId = nId;
         this.nodeNum = nodeNum;
+        this.eId = eId;
         this.random = random;
     }
 
     @Override
     public AwSet buildAwSet() {
-        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)),
+        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
                 Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
         BackGround backGround = new ClientBackGround();
         ClockLayer clockLayer = new VectorClockLayer(nId, nodeNum);
@@ -45,7 +47,7 @@ public class VectorClockFactory implements Factory{
 
     @Override
     public MvMap buildMvMap() {
-        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)),
+        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
                 Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
         BackGround backGround = new ClientBackGround();
         ClockLayer clockLayer = new VectorClockLayer(nId, nodeNum);

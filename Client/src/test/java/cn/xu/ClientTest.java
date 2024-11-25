@@ -1,11 +1,14 @@
 package cn.xu;
 
+import cn.xu.config.Config;
 import cn.xu.crdtObject.AwSet;
 import cn.xu.crdtObject.CrdtObject;
 import cn.xu.crdtObject.MvMap;
 import cn.xu.factory.Factory;
 import cn.xu.factory.SimplifyClockFactory;
 import cn.xu.factory.VectorClockFactory;
+import cn.xu.netLayer.NetLayer;
+import cn.xu.netLayer.mqttImpl.MqttNetLayer;
 import cn.xu.utils.TestUtils;
 import org.junit.Test;
 
@@ -16,6 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ClientTest {
+    static int edgeId = 0;
     static int clientNum = 10;
     static int opNum = 10;
     static int sleepTime = 10;
@@ -32,11 +36,11 @@ public class ClientTest {
         switch (clockType) {
             case "vector" :
             case "v":
-                factory = new VectorClockFactory(finalI, clientNum, random);
+                factory = new VectorClockFactory(finalI, clientNum, edgeId, random);
                 break;
             case "simplify":
             case "s" :
-                factory = new SimplifyClockFactory(finalI, random);
+                factory = new SimplifyClockFactory(finalI, edgeId, random);
                 break;
             default:
                 throw new RuntimeException("Clock Type Error");
@@ -121,5 +125,15 @@ public class ClientTest {
     @Test
     public void testSimplifyClockMvMap() {
         testMvMap("s");
+    }
+
+    @Test
+    public void testMultiEdgeClock() {
+        int nId = 0;
+        int eId = 1;
+        Random random = new Random();
+        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
+                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
+        netLayer.asyncSend("test");
     }
 }

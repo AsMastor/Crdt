@@ -6,13 +6,43 @@
 
     <groupId>cn.xu</groupId>
     <artifactId>Server</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.2</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <!-- 为了只生成一个 jar 包，将所有依赖全包打包，就不再依赖于本地 maven 环境 -->
+    <build>
+        <finalName>Server</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version> <!-- 请检查最新版本 -->
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>cn.xu.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>

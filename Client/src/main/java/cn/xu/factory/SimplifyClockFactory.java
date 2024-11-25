@@ -14,16 +14,18 @@ import java.util.Random;
 
 public class SimplifyClockFactory implements Factory {
     private final int nId;
+    private final int eId;
     private Random random;
 
-    public SimplifyClockFactory(int nId, Random random) {
+    public SimplifyClockFactory(int nId, int eId, Random random) {
         this.nId = nId;
+        this.eId = eId;
         this.random = random;
     }
 
     @Override
     public AwSet buildAwSet() {
-        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)),
+        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
                 Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
         BackGround backGround = new ClientBackGround();
         ClockLayer clockLayer = new SimplifyClockLayer(nId);
@@ -41,7 +43,7 @@ public class SimplifyClockFactory implements Factory {
 
     @Override
     public MvMap buildMvMap() {
-        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)),
+        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
                 Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
         BackGround backGround = new ClientBackGround();
         ClockLayer clockLayer = new SimplifyClockLayer(nId);

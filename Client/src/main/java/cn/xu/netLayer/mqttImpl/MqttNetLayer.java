@@ -14,13 +14,16 @@ public class MqttNetLayer implements NetLayer {
     private final String publishTopic;
     private final int qos = 1;
 
-    public MqttNetLayer(String nodeId, String subscribeTopic, String publishTopic, int RTTBase, Random random) {
+    public MqttNetLayer(String nodeId, int serverId, String subscribeTopic, String publishTopic, int RTTBase, Random random) {
+        // 订阅主题先加料
+        subscribeTopic = subscribeTopic.concat(String.valueOf(serverId));
+        publishTopic = publishTopic.concat(String.valueOf(serverId));
         // 先初始化mqtt客户端client
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(true);
         this.publishTopic = publishTopic;
         try {
-            client = new MqttClient(Config.mqttBroker, nodeId, new MemoryPersistence());
+            client = new MqttClient(Config.mqttBrokers.get(serverId), nodeId, new MemoryPersistence());
             //System.out.println("Connecting to broker: " + Config.mqttBroker);
             client.connect(connOpts);
             //System.out.println("Connected");

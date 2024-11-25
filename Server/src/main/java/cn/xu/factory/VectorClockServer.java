@@ -17,8 +17,7 @@ public class VectorClockServer implements Server{
 
     @Override
     public void start() {
-        NetLayer netLayer = new MqttNetLayer("server#".concat(String.valueOf(nId)),
-                Config.toServerTopic, Config.fromServerTopic);
+        NetLayer netLayer = new MqttNetLayer(nId, Config.toServerTopic, Config.fromServerTopic, 0);
         BackGround backGround = new ServerBackGround();
         ClockLayer clockLayer = new VectorClockLayer();
         // 依赖关系套嵌其中

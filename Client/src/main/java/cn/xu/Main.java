@@ -14,13 +14,13 @@ public class Main {
     }
 
     static void testAwSet() {
-        Factory factory = new SimplifyClockFactory(1, new Random(System.currentTimeMillis()));
+        Factory factory = new SimplifyClockFactory(1, 0, new Random(System.currentTimeMillis()));
         AwSet awSet = factory.buildAwSet();
         CmdLine.run(awSet);
     }
 
     static void testMvMap() {
-        Factory factory = new SimplifyClockFactory(1, new Random(System.currentTimeMillis()));
+        Factory factory = new SimplifyClockFactory(1, 0, new Random(System.currentTimeMillis()));
         MvMap mvMap = factory.buildMvMap();
         CmdLine.run(mvMap);
     }
