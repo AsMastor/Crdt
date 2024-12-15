@@ -7,30 +7,37 @@ import cn.xu.factory.VectorClockServer;
 import cn.xu.utils.TestUtils;
 
 public class Main {
-    private static void testVectorClockServer() {
-        Server server = new VectorClockServer(0);
+    public static void main(String[] args) {
+        //asVectorClockServer(Integer.parseInt(args[0]));
+        //asSimplifyClockServer(Integer.parseInt(args[0]));
+        asMultiEdgeClockServer(Integer.parseInt(args[0]));
+    }
+
+    private static void asVectorClockServer(int edgeId) {
+        int edgeNum = 3;
+        Server server = new VectorClockServer(edgeId, edgeNum);
         server.start();
         // 主线程无限期等待
         TestUtils.foreverSleep();
     }
 
     //@Test
-    private static void testSimplifyClockServer() {
-        Server server = new SimplifyClockServer(0);
+    private static void asSimplifyClockServer(int edgeId) {
+        Server server = new SimplifyClockServer(edgeId);
         server.start();
         // 主线程无限期等待
         TestUtils.foreverSleep();
     }
 
-    private static void AsMultiEdgeClockServer() {
-        int edgeId = 1;
+    private static void asMultiEdgeClockServer(int edgeId) {
         int edgeNum = 3;
         Server server = new MultiEdgeClockServer(edgeId, edgeNum);
+        server.start();
         // 主线程无限期等待
         TestUtils.foreverSleep();
     }
 
-    private static void testMultiEdgeClockServer() {
+    private static void singleTestMultiEdgeClockServer() {
         int eNum = 3;
         for (int i = 0; i < eNum; i++) {
             Server server = new MultiEdgeClockServer(i, eNum);
@@ -38,11 +45,5 @@ public class Main {
         }
         // 主线程无限期等待
         TestUtils.foreverSleep();
-    }
-
-    public static void main(String[] args) {
-        //testVectorClockServer();
-        //testSimplifyClockServer();
-        testMultiEdgeClockServer();
     }
 }

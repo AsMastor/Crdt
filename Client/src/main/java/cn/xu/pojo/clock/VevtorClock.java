@@ -97,11 +97,11 @@ public class VevtorClock implements Clock {
         StringBuilder sb = new StringBuilder();
         sb.append("<<").append(clock[0]);
         for (int i = 1; i < clock.length; i++) {
-            sb.append(", ").append(clock[i]);
+            sb.append(",").append(clock[i]);
         }
         sb.append(">,<").append(clock4Delivery[0]);;
         for (int i = 1; i < clock4Delivery.length; i++) {
-            sb.append(", ").append(clock4Delivery[i]);
+            sb.append(",").append(clock4Delivery[i]);
         }
         sb.append(">,").append(nid).append(">");
         return sb.toString();

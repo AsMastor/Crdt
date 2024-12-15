@@ -5,5 +5,7 @@
     <file url="file://$PROJECT_DIR$/Client/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/control/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/control/src/main/resources" charset="UTF-8" />
   </component>
 </project>

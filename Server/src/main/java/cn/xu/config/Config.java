@@ -13,10 +13,9 @@ public class Config {
     public static final List<String> mqttBrokers;
     static {
         mqttBrokers = new ArrayList<>();
-        mqttBrokers.add ("tcp://111.231.82.68:1883");   // 腾讯云上海
         mqttBrokers.add ("tcp://8.146.204.142:1883");   // 阿里云北京
         mqttBrokers.add ("tcp://8.156.64.76:1883");     // 阿里云成都
+        mqttBrokers.add ("tcp://111.231.82.68:1883");   // 腾讯云上海
         mqttBrokers.add ("tcp://0.0.0.0:1883");         // 本机
-
     }
 }

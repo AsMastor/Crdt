@@ -10,7 +10,7 @@ import org.junit.Test;
 public class ServerTest {
     //@Test
     public void testVectorClockServer() {
-        Server server = new VectorClockServer(0);
+        Server server = new VectorClockServer(0, 0);
         server.start();
         // 主线程无限期等待
         TestUtils.foreverSleep();

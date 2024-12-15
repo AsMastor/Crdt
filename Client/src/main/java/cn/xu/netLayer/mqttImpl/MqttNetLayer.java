@@ -3,18 +3,32 @@ package cn.xu.netLayer.mqttImpl;
 import cn.xu.backGround.BackGround;
 import cn.xu.netLayer.NetLayer;
 import cn.xu.config.Config;
+import cn.xu.utils.TestUtils;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 public class MqttNetLayer implements NetLayer {
     private MqttClient client;
     private MyMqttCallback myMqttCallback;
     private final String publishTopic;
     private final int qos = 1;
+    private Semaphore semaphore;
+    private final int RTTBase, RTTRange;
+    private final Random random;
+
+    public MqttNetLayer(String nodeId, int serverId, String subscribeTopic, String publishTopic, int RTTBase, Random random, Semaphore semaphore) {
+        this(nodeId, serverId, subscribeTopic, publishTopic, RTTBase, random);
+        this.semaphore = semaphore;
+    }
 
     public MqttNetLayer(String nodeId, int serverId, String subscribeTopic, String publishTopic, int RTTBase, Random random) {
+        this.random = new Random(random.nextInt());
+        this.RTTBase = RTTBase;
+        RTTRange = RTTBase * Config.RTTRangePercentage / 100;
         // 订阅主题先加料
         subscribeTopic = subscribeTopic.concat(String.valueOf(serverId));
         publishTopic = publishTopic.concat(String.valueOf(serverId));
@@ -22,20 +36,22 @@ public class MqttNetLayer implements NetLayer {
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(true);
         this.publishTopic = publishTopic;
+        // 创建客户端并订阅对应主题
         try {
             client = new MqttClient(Config.mqttBrokers.get(serverId), nodeId, new MemoryPersistence());
-            //System.out.println("Connecting to broker: " + Config.mqttBroker);
             client.connect(connOpts);
-            //System.out.println("Connected");
-        } catch (MqttException me) {
-            me.printStackTrace();
-        }
-        // 订阅对应的主题
-        try {
-            int RTTRange = RTTBase * Config.RTTRangePercentage / 100;
             myMqttCallback = new MyMqttCallback(RTTBase, RTTRange, random);
             client.setCallback(myMqttCallback);
             client.subscribe(subscribeTopic, qos);
+        } catch (MqttException me) {
+            me.printStackTrace();
+        }
+        // 创建客户端，订阅控制主题
+        try {
+            MqttClient ctrClient = new MqttClient(Config.mqttBrokers.get(0), nodeId + "ctr", new MemoryPersistence());
+            ctrClient.connect(connOpts);
+            ctrClient.setCallback(new ControlCallback());
+            ctrClient.subscribe(Config.controlTopic);
         } catch (MqttException me) {
             me.printStackTrace();
         }
@@ -44,6 +60,23 @@ public class MqttNetLayer implements NetLayer {
     @Override
     public void setBackGround(BackGround backGround) {
         myMqttCallback.setBackGround(backGround);
+    }
+
+    private class ControlCallback implements MqttCallback {
+        @Override
+        public void connectionLost(Throwable throwable) {
+
+        }
+
+        @Override
+        public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+            semaphore.release();
+        }
+
+        @Override
+        public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+        }
     }
 
     private class MyMqttCallback implements MqttCallback {
@@ -58,16 +91,6 @@ public class MqttNetLayer implements NetLayer {
             this.random = random;
         }
 
-        private void randomRTT() {
-            try {
-                int time = RTTBase + random.nextInt() % RTTRange;
-                //System.out.println("Random Time: " + time);
-                Thread.sleep(time);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         void setBackGround(BackGround backGround) {
             this.backGround = backGround;
         }
@@ -80,7 +103,7 @@ public class MqttNetLayer implements NetLayer {
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
             // 模拟网络延时，故意暂停一段时间
-            randomRTT();
+            TestUtils.randomHRTT(RTTBase, RTTRange, random);
             String msg = new String(message.getPayload());
             //System.out.println("Received message from topic '" + topic + "': " + msg);
             backGround.msgIn(msg);
@@ -98,6 +121,8 @@ public class MqttNetLayer implements NetLayer {
         //System.out.println("Publishing message: " + msg.toString());
         MqttMessage message = new MqttMessage(msgStr.getBytes());
         message.setQos(qos);
+        // 模拟网络延时，故意暂停一段时间
+        TestUtils.randomHRTT(RTTBase, RTTRange, random);
         try {
             // 发布消息
             client.publish(publishTopic, message);

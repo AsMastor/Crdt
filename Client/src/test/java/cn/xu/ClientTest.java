@@ -14,10 +14,7 @@ import cn.xu.utils.TestUtils;
 import org.junit.Test;
 
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class ClientTest {
     static int edgeId = 0;
@@ -37,11 +34,11 @@ public class ClientTest {
         switch (clockType) {
             case "vector" :
             case "v":
-                factory = new VectorClockFactory(finalI, clientNum, edgeId, random);
+                factory = new VectorClockFactory(finalI, clientNum, edgeId, random, null);
                 break;
             case "simplify":
             case "s" :
-                factory = new SimplifyClockFactory(finalI, edgeId, random);
+                factory = new SimplifyClockFactory(finalI, edgeId, random, null);
                 break;
             default:
                 throw new RuntimeException("Clock Type Error");
@@ -109,37 +106,37 @@ public class ClientTest {
         TestUtils.foreverSleep();
     }
 
-    @Test
+    //@Test
     public void testVectorClockAwSet() {
         testAwSet("v");
     }
 
-    @Test
+    //@Test
     public void testVectorClockMvMap() {
         testMvMap("v");
     }
 
-    @Test
+    //@Test
     public void testSimplifyClockAwSet() {
         testAwSet("s");
     }
 
-    @Test
+    //@Test
     public void testSimplifyClockMvMap() {
         testMvMap("s");
     }
 
-    @Test
+    //@Test
     public void testMultiEdgeClock() {
         int nId = 0;
         int eId = 1;
         Random random = new Random();
         NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
-                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
+                Config.fromServerTopic, Config.toServerTopic, 0, random);
         netLayer.asyncSend("0%0&2&1#2#-1#-1#-1#0#0#0");
     }
 
-    @Test
+    //@Test
     public void testMultiEdgeClockMvMap() {
         int edgeServerNum = 3;
         int edgeClientNum = 5;
@@ -151,7 +148,7 @@ public class ClientTest {
                 threadPool.execute(()->{
                     Random random = new Random(mainRandom.nextInt());
                     CountDownLatch latch = new CountDownLatch(clientNum * opNum);
-                    Factory factory = new MultiEdgeClockFactory(finalClientId, finalEdgeId, edgeServerNum, random);
+                    Factory factory = new MultiEdgeClockFactory(finalClientId, finalEdgeId, edgeServerNum, random, new Semaphore(0));
                     MvMap mvMap = factory.buildMvMap();
                     mvMap.setCountDownLatch(latch);
                     TestUtils.randomSleep(random, 2000, 10);

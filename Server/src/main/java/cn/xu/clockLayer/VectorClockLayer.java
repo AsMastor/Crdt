@@ -30,6 +30,7 @@ public class VectorClockLayer implements ClockLayer{
     public void msgOut(String msgStr) {
         //System.out.println("Send Msg: " + msg.toString());
         netLayer.asyncSend(msgStr);
+        netLayer.asyncSendToOtherServers(msgStr);
     }
 
     @Override

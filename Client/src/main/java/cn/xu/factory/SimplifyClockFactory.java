@@ -11,22 +11,25 @@ import cn.xu.netLayer.NetLayer;
 import cn.xu.netLayer.mqttImpl.MqttNetLayer;
 
 import java.util.Random;
+import java.util.concurrent.Semaphore;
 
 public class SimplifyClockFactory implements Factory {
     private final int nId;
     private final int eId;
     private Random random;
+    private Semaphore semaphore;
 
-    public SimplifyClockFactory(int nId, int eId, Random random) {
+    public SimplifyClockFactory(int nId, int eId, Random random, Semaphore semaphore) {
         this.nId = nId;
         this.eId = eId;
         this.random = random;
+        this.semaphore = semaphore;
     }
 
     @Override
     public AwSet buildAwSet() {
         NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
-                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
+                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseS, random, semaphore);
         BackGround backGround = new ClientBackGround();
         ClockLayer clockLayer = new SimplifyClockLayer(nId);
         AwSet awSet = new AwSet();
@@ -44,7 +47,7 @@ public class SimplifyClockFactory implements Factory {
     @Override
     public MvMap buildMvMap() {
         NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
-                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseL, random);
+                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseS, random, semaphore);
         BackGround backGround = new ClientBackGround();
         ClockLayer clockLayer = new SimplifyClockLayer(nId);
         MvMap mvMap = new MvMap();

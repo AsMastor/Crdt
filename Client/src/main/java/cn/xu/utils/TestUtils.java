@@ -9,8 +9,21 @@ public class TestUtils {
     }
 
     public static void randomSleep(Random random, int sleepTime, int sleepTimeRange) {
+        int trueSleepTime = sleepTime;
+        if (sleepTimeRange != 0) {
+            trueSleepTime = sleepTime + random.nextInt() % sleepTimeRange;
+        }
         try {
-            Thread.sleep(sleepTime + random.nextInt() % sleepTimeRange);
+            Thread.sleep(trueSleepTime);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void randomHRTT(int RTTBase, int RTTRange, Random random) {
+        try {
+            int time = RTTBase / 2 + random.nextInt() % RTTRange;
+            Thread.sleep(time);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
