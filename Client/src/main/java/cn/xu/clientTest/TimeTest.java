@@ -38,9 +38,9 @@ public class TimeTest {
 
     public static void test() {
         init();
-        vectorClockMvMapClients(edgeId, mqttServerId);
+        //vectorClockMvMapClients(edgeId, mqttServerId);
         //simplifyClockMvMapClients(edgeId, mqttServerId);
-        //multiEdgeMvMapClients(edgeId, clientGroupId);
+        multiEdgeMvMapClients(edgeId, clientGroupId);
     }
 
     static void init() {
@@ -103,6 +103,7 @@ public class TimeTest {
                     }
                     TestUtils.randomSleep(random, sleepTime, sleepTimeRange);
                 }
+                //TestUtils.randomSleep(random, 1000, 0);
                 showCrdtObject(random, lwwMap, latch, tc);
             });
         }

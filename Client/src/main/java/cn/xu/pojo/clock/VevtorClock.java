@@ -1,6 +1,7 @@
 package cn.xu.pojo.clock;
 
 import cn.xu.config.Config;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,29 +20,13 @@ public class VevtorClock implements Clock {
     int nid;
 
     // 反序列化
-    public VevtorClock(String clockStr) {
-        String[] clockStrs = clockStr.split(Config.clockSplitter);
-        int size = (clockStrs.length - 1) / 2;
-        clock = new int[size];
-        clock4Delivery = new int[size];
-        for (int i = 0; i < size; i++) {
-            clock[i] = Integer.parseInt(clockStrs[i]);
-            clock4Delivery[i] = Integer.parseInt(clockStrs[size + i]);
-        }
-        nid = Integer.parseInt(clockStrs[clockStrs.length - 1]);
+    public static VevtorClock deSerialized(String clockStr) {
+        return JSON.parseObject(clockStr, VevtorClock.class);
     }
 
     @Override
     public String serialized() {
-        StringBuilder sb = new StringBuilder(String.valueOf(clock[0]));
-        for (int i = 1; i < clock.length; i++) {
-            sb.append(Config.clockSplitter).append(String.valueOf(clock[i]));
-        }
-        for (int i = 0; i < clock4Delivery.length; i++) {
-            sb.append(Config.clockSplitter).append(String.valueOf(clock4Delivery[i]));
-        }
-        sb.append(Config.clockSplitter).append(String.valueOf(nid));
-        return sb.toString();
+        return JSON.toJSONString(this);
     }
 
     @Override

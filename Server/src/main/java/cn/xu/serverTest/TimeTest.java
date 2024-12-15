@@ -7,16 +7,14 @@ import cn.xu.factory.VectorClockServer;
 import cn.xu.utils.IOUtils;
 import cn.xu.utils.TestUtils;
 
-import java.util.concurrent.CountDownLatch;
-
 public class TimeTest {
     static int edgeId;
 
     public static void test() {
         init();
-        asVectorClockServer();
+        //asVectorClockServer();
         //asSimplifyClockServer();
-        //asMultiEdgeClockServer();
+        asMultiEdgeClockServer();
     }
 
     private static void init() {

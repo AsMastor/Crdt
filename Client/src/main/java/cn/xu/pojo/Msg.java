@@ -23,12 +23,15 @@ public class Msg {
             op = new Operation(msgStrs[0]);
             int clockType = Integer.parseInt(msgStrs[1]);
             if (clockType == ClockType.VectorClock.ordinal()) {
-                clock = new VevtorClock(msgStrs[2]);
+                clock = VevtorClock.deSerialized(msgStrs[2]);
             } else if (clockType == ClockType.SimplifyClock.ordinal()) {
                 clock = new SimplifyClock(msgStrs[2]);
             } else if (clockType == ClockType.MultiEdgeClock.ordinal()) {
                 clock = MultiEdgeClock.deSerialized(msgStrs[2]);
-            } else {
+            }  else if (clockType == ClockType.TreeClock.ordinal()) {
+                clock = TreeClock.deSerialized(msgStrs[2]);
+            }
+            else {
                 throw new RuntimeException("Illegal Msg Clock Type");
             }
         } else {
