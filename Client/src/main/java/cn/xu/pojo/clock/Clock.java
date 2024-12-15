@@ -38,4 +38,10 @@ public interface Clock {
      * 用 c2 替换掉当前时钟的内容
      */
     void replaceBy(Clock c2);
+
+    /**
+     * Lww 算法需要的全序，注意：在两个时钟并发时才能使用
+     * 如果当前时钟 > c2 则返回true
+     */
+    boolean totalBigger(Clock c2);
 }

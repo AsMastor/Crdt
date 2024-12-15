@@ -106,27 +106,27 @@ public class ClientTest {
         TestUtils.foreverSleep();
     }
 
-    //@Test
+    //@serverTest
     public void testVectorClockAwSet() {
         testAwSet("v");
     }
 
-    //@Test
+    //@serverTest
     public void testVectorClockMvMap() {
         testMvMap("v");
     }
 
-    //@Test
+    //@serverTest
     public void testSimplifyClockAwSet() {
         testAwSet("s");
     }
 
-    //@Test
+    //@serverTest
     public void testSimplifyClockMvMap() {
         testMvMap("s");
     }
 
-    //@Test
+    //@serverTest
     public void testMultiEdgeClock() {
         int nId = 0;
         int eId = 1;
@@ -136,7 +136,7 @@ public class ClientTest {
         netLayer.asyncSend("0%0&2&1#2#-1#-1#-1#0#0#0");
     }
 
-    //@Test
+    //@serverTest
     public void testMultiEdgeClockMvMap() {
         int edgeServerNum = 3;
         int edgeClientNum = 5;

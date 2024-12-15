@@ -1,6 +1,7 @@
 package cn.xu.factory;
 
 import cn.xu.crdtObject.AwSet;
+import cn.xu.crdtObject.LwwMap;
 import cn.xu.crdtObject.MvMap;
 
 public interface Factory {
@@ -13,4 +14,9 @@ public interface Factory {
      * 负责生成MvMap
      */
     MvMap buildMvMap();
+
+    /**
+     * 负责生成LwwMap
+     */
+    LwwMap buildLwwMap();
 }

@@ -24,7 +24,7 @@ public class Msg {
             } else if (clockType == ClockType.SimplifyClock.ordinal()) {
                 clock = new SimplifyClock(msgStrs[2]);
             } else if (clockType == ClockType.MultiEdgeClock.ordinal()) {
-                clock = new MultiEdgeClock(msgStrs[2]);
+                clock = MultiEdgeClock.deSerialized(msgStrs[2]);
             } else {
                 throw new RuntimeException("Illegal Msg Clock Type");
             }

@@ -74,6 +74,11 @@ public class SimplifyClock implements Clock {
     }
 
     @Override
+    public boolean totalBigger(Clock c2) {
+        return this.nid < ((SimplifyClock) c2).nid;
+    }
+
+    @Override
     public String toString() {
         return "<".concat(String.valueOf(nid)).concat(",").concat(String.valueOf(lc)).concat(",")
                 .concat(String.valueOf(gca)).concat(",").concat(String.valueOf(gcb)).concat(">");

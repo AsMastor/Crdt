@@ -8,8 +8,6 @@ import cn.xu.pojo.clock.Clock;
 import cn.xu.pojo.clock.MultiEdgeClock;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiEdgeClockLayer implements ClockLayer{

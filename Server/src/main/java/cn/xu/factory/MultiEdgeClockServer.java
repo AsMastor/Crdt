@@ -4,7 +4,6 @@ import cn.xu.backGround.BackGround;
 import cn.xu.backGround.ServerBackGround;
 import cn.xu.clockLayer.ClockLayer;
 import cn.xu.clockLayer.MultiEdgeClockLayer;
-import cn.xu.clockLayer.SimplifyClockLayer;
 import cn.xu.config.Config;
 import cn.xu.netLayer.NetLayer;
 import cn.xu.netLayer.mqttImpl.MqttNetLayer;

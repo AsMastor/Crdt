@@ -1,14 +1,21 @@
 package cn.xu.pojo.clock;
 
 import cn.xu.config.Config;
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
 public class VevtorClock implements Clock {
+    @JSONField(serialize=false)
+    static ClockType clockType = ClockType.VectorClock;
+
+    @JSONField(name = "C")
     int[] clock;
+    @JSONField(name = "D")
     int[] clock4Delivery;
+    @JSONField(name = "N")
     int nid;
 
     // 反序列化
@@ -39,7 +46,7 @@ public class VevtorClock implements Clock {
 
     @Override
     public ClockType getClockType() {
-        return ClockType.VectorClock;
+        return clockType;
     }
 
     /**
@@ -91,6 +98,11 @@ public class VevtorClock implements Clock {
      */
     @Override
     public void replaceBy(Clock c2) {}
+
+    @Override
+    public boolean totalBigger(Clock c2) {
+        return this.nid < ((VevtorClock) c2).nid;
+    }
 
     @Override
     public String toString() {

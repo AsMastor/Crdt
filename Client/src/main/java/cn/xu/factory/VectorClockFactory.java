@@ -7,6 +7,7 @@ import cn.xu.clockLayer.SimplifyClockLayer;
 import cn.xu.clockLayer.VectorClockLayer;
 import cn.xu.config.Config;
 import cn.xu.crdtObject.AwSet;
+import cn.xu.crdtObject.LwwMap;
 import cn.xu.crdtObject.MvMap;
 import cn.xu.netLayer.NetLayer;
 import cn.xu.netLayer.mqttImpl.MqttNetLayer;
@@ -65,5 +66,24 @@ public class VectorClockFactory implements Factory{
         // 成功创建并返回
         System.out.println("VectorClockClient ".concat(String.valueOf(nId)).concat(" start..."));
         return mvMap;
+    }
+
+    @Override
+    public LwwMap buildLwwMap() {
+        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
+                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseS, random, semaphore);
+        BackGround backGround = new ClientBackGround();
+        ClockLayer clockLayer = new VectorClockLayer(nId, nodeNum);
+        LwwMap lwwMap = new LwwMap();
+        // 依赖关系套嵌其中
+        netLayer.setBackGround(backGround);
+        backGround.setClockLayer(clockLayer);
+        clockLayer.setCrdtLayer(lwwMap);
+        clockLayer.setNetLayer(netLayer);
+        clockLayer.setBackGround(backGround);
+        lwwMap.setClockLayer(clockLayer);
+        // 成功创建并返回
+        System.out.println("VectorClockClient ".concat(String.valueOf(nId)).concat(" start..."));
+        return lwwMap;
     }
 }

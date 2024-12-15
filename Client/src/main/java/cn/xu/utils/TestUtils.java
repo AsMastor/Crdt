@@ -21,9 +21,12 @@ public class TestUtils {
     }
 
     public static void randomHRTT(int RTTBase, int RTTRange, Random random) {
+        int trueSleepTime = RTTBase;
+        if (RTTBase != 0) {
+            trueSleepTime = RTTBase / 2 + random.nextInt() % RTTRange;
+        }
         try {
-            int time = RTTBase / 2 + random.nextInt() % RTTRange;
-            Thread.sleep(time);
+            Thread.sleep(trueSleepTime);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

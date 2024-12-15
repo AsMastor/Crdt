@@ -8,7 +8,7 @@ import cn.xu.utils.TestUtils;
 import org.junit.Test;
 
 public class ServerTest {
-    //@Test
+    //@serverTest
     public void testVectorClockServer() {
         Server server = new VectorClockServer(0, 0);
         server.start();
@@ -16,7 +16,7 @@ public class ServerTest {
         TestUtils.foreverSleep();
     }
 
-    //@Test
+    //@serverTest
     public void testSimplifyClockServer() {
         Server server = new SimplifyClockServer(0);
         server.start();
@@ -24,7 +24,7 @@ public class ServerTest {
         TestUtils.foreverSleep();
     }
 
-    //@Test
+    //@serverTest
     public void testMultiEdgeClockServer() {
         int eNum = 2;
         for (int i = 0; i < eNum; i++) {

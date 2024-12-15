@@ -6,6 +6,7 @@ import cn.xu.clockLayer.ClockLayer;
 import cn.xu.clockLayer.SimplifyClockLayer;
 import cn.xu.config.Config;
 import cn.xu.crdtObject.AwSet;
+import cn.xu.crdtObject.LwwMap;
 import cn.xu.crdtObject.MvMap;
 import cn.xu.netLayer.NetLayer;
 import cn.xu.netLayer.mqttImpl.MqttNetLayer;
@@ -60,5 +61,10 @@ public class SimplifyClockFactory implements Factory {
         // 成功创建并返回
         System.out.println("SimplifyClockClient ".concat(String.valueOf(nId)).concat(" start..."));
         return mvMap;
+    }
+
+    @Override
+    public LwwMap buildLwwMap() {
+        return null;
     }
 }
