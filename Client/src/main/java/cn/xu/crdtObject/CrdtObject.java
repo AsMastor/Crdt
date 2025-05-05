@@ -1,6 +1,7 @@
 package cn.xu.crdtObject;
 
 import cn.xu.clockLayer.ClockLayer;
+import cn.xu.netLayer.NetLayer;
 import cn.xu.pojo.Msg;
 
 import java.util.concurrent.CountDownLatch;

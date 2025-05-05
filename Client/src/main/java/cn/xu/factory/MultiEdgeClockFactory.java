@@ -6,6 +6,7 @@ import cn.xu.clockLayer.ClockLayer;
 import cn.xu.clockLayer.MultiEdgeClockLayer;
 import cn.xu.config.Config;
 import cn.xu.crdtObject.AwSet;
+import cn.xu.crdtObject.LogList;
 import cn.xu.crdtObject.LwwMap;
 import cn.xu.crdtObject.MvMap;
 import cn.xu.netLayer.NetLayer;
@@ -40,6 +41,8 @@ public class MultiEdgeClockFactory implements Factory{
         clockLayer.setCrdtLayer(awSet);
         clockLayer.setNetLayer(netLayer);
         awSet.setClockLayer(clockLayer);
+        // 启动同步
+        netLayer.startSyc();
         // 成功创建并返回
         System.out.println("MultiEdgeClockClient ".concat(String.valueOf(nId)).concat(" start..."));
         return awSet;
@@ -58,6 +61,8 @@ public class MultiEdgeClockFactory implements Factory{
         clockLayer.setCrdtLayer(mvMap);
         clockLayer.setNetLayer(netLayer);
         mvMap.setClockLayer(clockLayer);
+        // 启动同步
+        netLayer.startSyc();
         // 成功创建并返回
         System.out.println("MultiEdgeClockClient ".concat(String.valueOf(nId)).concat(" start..."));
         return mvMap;
@@ -76,8 +81,30 @@ public class MultiEdgeClockFactory implements Factory{
         clockLayer.setCrdtLayer(lwwMap);
         clockLayer.setNetLayer(netLayer);
         lwwMap.setClockLayer(clockLayer);
+        // 启动同步
+        netLayer.startSyc();
         // 成功创建并返回
         System.out.println("MultiEdgeClockClient ".concat(String.valueOf(nId)).concat(" start..."));
         return lwwMap;
+    }
+
+    @Override
+    public LogList buildLogList() {
+        NetLayer netLayer = new MqttNetLayer("client#".concat(String.valueOf(nId)), eId,
+                Config.fromServerTopic, Config.toServerTopic, Config.RTTBaseS, random, semaphore);
+        BackGround backGround = new ClientBackGround();
+        ClockLayer clockLayer = new MultiEdgeClockLayer(nId, eNum);
+        LogList logList = new LogList();
+        // 依赖关系套嵌其中
+        netLayer.setBackGround(backGround);
+        backGround.setClockLayer(clockLayer);
+        clockLayer.setCrdtLayer(logList);
+        clockLayer.setNetLayer(netLayer);
+        logList.setClockLayer(clockLayer);
+        // 启动同步
+        netLayer.startSyc();
+        // 成功创建并返回
+        System.out.println("MultiEdgeClockClient ".concat(String.valueOf(nId)).concat(" start..."));
+        return logList;
     }
 }

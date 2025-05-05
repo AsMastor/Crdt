@@ -2,11 +2,13 @@ package cn.xu.crdtObject;
 
 import cn.xu.clockLayer.ClockLayer;
 import cn.xu.config.Config;
+import cn.xu.netLayer.NetLayer;
 import cn.xu.pojo.Msg;
 import cn.xu.pojo.clock.Clock;
 import cn.xu.pojo.operation.OpType;
 import cn.xu.pojo.operation.Operation;
 import cn.xu.utils.Pair;
+import lombok.Setter;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -15,6 +17,8 @@ public class MvMap implements CrdtObject{
     private CountDownLatch latch;   // 每来一个其他消息和自己产生操作时就--，以此来得知所有操作都结束的时刻
     private HashMap<String, LinkedList<Pair<Clock, String>>> existMap;
     private ClockLayer clockLayer;
+    @Setter
+    private NetLayer netLayer;
 
     public MvMap() {
         existMap = new HashMap<>();
@@ -32,6 +36,10 @@ public class MvMap implements CrdtObject{
 
     @Override
     public void msgIn(Msg msg) {
+        if (msg.getOp() == null) {
+            latch.countDown();
+            return;
+        }
         //System.out.println("Received Msg From Others: " + msg.toString());
         Operation op = msg.getOp();
         String key = op.getParams()[0];

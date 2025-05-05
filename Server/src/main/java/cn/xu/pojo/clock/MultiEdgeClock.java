@@ -40,6 +40,44 @@ public class MultiEdgeClock implements Clock {
         return ClockType.MultiEdgeClock;
     }
 
+    public String unique() {
+        return String.valueOf(nodeId).concat(Config.clockSplitter).concat(String.valueOf(lc));
+    }
+
+    public int compare(Clock c2) {
+        MultiEdgeClock clock2 = (MultiEdgeClock) c2;
+        if (this.nodeId == clock2.nodeId) {
+            if (this.lc < clock2.lc) {
+                return -1;
+            }
+            if (this.lc > clock2.lc) {
+                return 1;
+            }
+            throw new RuntimeException("same clock error");
+        }
+        if (this.edgeGc != Config.Null) {
+            if (this.edgeGc <= clock2.gcas[this.edgeId]) {
+                return -1;
+            }
+        }
+        if (clock2.edgeGc != Config.Null) {
+            if (clock2.edgeGc <= this.gcas[clock2.edgeId]) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    public boolean totalBigger(Clock c2) {
+        int preCom = compare(c2);
+        if (preCom == 1) {
+            return true;
+        } else if (preCom == -1) {
+            return false;
+        }
+        return this.nodeId < ((MultiEdgeClock) c2).nodeId;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("<");

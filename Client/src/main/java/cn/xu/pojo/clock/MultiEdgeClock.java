@@ -40,6 +40,10 @@ public class MultiEdgeClock implements Clock {
         return clockType;
     }
 
+    public String unique() {
+        return String.valueOf(nodeId).concat(Config.clockSplitter).concat(String.valueOf(lc));
+    }
+
     @Override
     public boolean fromOwn(int thisNodeId) {
         return thisNodeId == nodeId;

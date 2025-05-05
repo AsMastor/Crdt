@@ -16,7 +16,7 @@ public class Mqtt {
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(true);
         try {
-            client = new MqttClient("tcp://8.146.204.142:1883", "host", new MemoryPersistence());
+            client = new MqttClient("tcp://0.0.0.0:1883", "host", new MemoryPersistence());
             client.connect(connOpts);
         } catch (MqttException e) {
             e.printStackTrace();

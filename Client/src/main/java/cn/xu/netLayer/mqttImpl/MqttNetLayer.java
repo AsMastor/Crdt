@@ -13,6 +13,8 @@ import java.util.concurrent.Semaphore;
 
 public class MqttNetLayer implements NetLayer {
     private MqttClient client;
+    private String sycEndClientId;
+    private MqttClient startSycClient;
     private MyMqttCallback myMqttCallback;
     private final String publishTopic;
     private final int qos = 1;
@@ -26,6 +28,7 @@ public class MqttNetLayer implements NetLayer {
     }
 
     public MqttNetLayer(String nodeId, int serverId, String subscribeTopic, String publishTopic, int RTTBase, Random random) {
+        this.sycEndClientId = Config.startSycEndSymbol + nodeId;
         this.random = new Random(random.nextInt());
         this.RTTBase = RTTBase;
         RTTRange = RTTBase * Config.RTTRangePercentage / 100;
@@ -35,6 +38,7 @@ public class MqttNetLayer implements NetLayer {
         // 先初始化mqtt客户端client
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(true);
+        connOpts.setMaxInflight(1000);
         this.publishTopic = publishTopic;
         // 创建客户端并订阅对应主题
         try {
@@ -43,6 +47,15 @@ public class MqttNetLayer implements NetLayer {
             myMqttCallback = new MyMqttCallback(RTTBase, RTTRange, random);
             client.setCallback(myMqttCallback);
             client.subscribe(subscribeTopic, qos);
+        } catch (MqttException me) {
+            me.printStackTrace();
+        }
+        // 创建开始启动客户端，并订阅对应主题
+        try {
+            startSycClient = new MqttClient(Config.mqttBrokers.get(serverId), nodeId + "startSyc", new MemoryPersistence());
+            startSycClient.connect(connOpts);
+            startSycClient.setCallback(myMqttCallback);
+            startSycClient.subscribe(Config.startSycDownTopic, qos);
         } catch (MqttException me) {
             me.printStackTrace();
         }
@@ -106,6 +119,14 @@ public class MqttNetLayer implements NetLayer {
             TestUtils.randomHRTT(RTTBase, RTTRange, random);
             String msg = new String(message.getPayload());
             //System.out.println("Received message from topic '" + topic + "': " + msg);
+            // TODO: 让边缘服务器来决定结束不合理，会导致其他正在startsyc的客户端同样停止，后续改进为客户端自己判断停止startsyc
+            if (msg.startsWith(Config.startSycEndSymbol)) {
+                if (msg.equals(sycEndClientId)) {
+                    startSycClient.disconnect();
+                    System.out.println("syc end");
+                }
+                return;
+            }
             backGround.msgIn(msg);
         }
 
@@ -129,6 +150,17 @@ public class MqttNetLayer implements NetLayer {
             //System.out.println("Message published");
         } catch (MqttException me) {
             me.printStackTrace();
+        }
+    }
+
+    @Override
+    public void startSyc() {
+        MqttMessage message = new MqttMessage(sycEndClientId.getBytes());
+        message.setQos(qos);
+        try {
+            startSycClient.publish(Config.startSycUpTopic, message);
+        } catch (MqttException e) {
+            e.printStackTrace();
         }
     }
 }

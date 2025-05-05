@@ -1,7 +1,9 @@
 package cn.xu.pojo.operation;
 
 import cn.xu.config.Config;
+import lombok.Data;
 
+@Data
 public class Operation {
     OpType opType;
     String[] params;
